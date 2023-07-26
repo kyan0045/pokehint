@@ -1,4 +1,5 @@
 # PokeHint
+[![](https://img.shields.io/npm/v/pokehint.svg)](https://www.npmjs.com/package/pokehint)
 
 ## Installation
 
