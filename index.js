@@ -1,5 +1,5 @@
 const solveHint = require('./functions/solveHint.js');
 
-const client = { solveHint, hint }
+const client = { solveHint }
 
 module.exports = client;
