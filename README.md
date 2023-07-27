@@ -12,11 +12,15 @@ npm i pokehint
 ## Usage
 
 ```javascript
-const { solveHint } = require('pokehint');
+const { solveHint, checkRarity } = require('pokehint');
 
 // Solving hints
 var hint = message.content;
 console.log(solveHint(hint)) // Logs the Pokémon that has been found.
+
+// Checking the rarity
+var pokemonName = 'Moltres';
+console.log(checkRarity(pokemonName)) // Logs Moltres' rarity: 'legendary'.
 ```
 
 ## Links
