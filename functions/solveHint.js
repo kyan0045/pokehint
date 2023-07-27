@@ -1,25 +1,36 @@
-async function solveHint(message) {
-    const pokemon = require('../data/pokemon.json')
 
+async function solveHint(message) {
+    const pokemon = require('../data/pokemon.json');
+  
     const str = message.content;
     const words = str.split(" ");
-    const lastWord = words[words.length - 1];
-
-    const pattern1 = lastWord.replace(/\!/,"")
-    const pattern2 = pattern1.replace(/\./,"")
-    const pattern3 = pattern2.replace(/\\/g,"")
-
-    const hint = pattern3.replace(/_/g,".")
-    let matches = pokemon.reduce((p, c) => {
-        let val = c.match(hint); 
-        if (!val) return p; 
-        if (!pokemon.includes(val[0])) return p; 
-        val.forEach(v => {
-            if (val[0].length == hint.length) p.push(v); 
-        });
-        return p; 
-    }, [] );
-    return matches;
-}
-
-module.exports = solveHint;
+    let lastWord = words[words.length - 1];
+    if (words[3].includes('_') && words[4]) {
+        lastWord = words[3] + ' ' + words[4]
+    }
+  
+    const pattern1 = lastWord.replace(/\!/,"");
+    const pattern2 = pattern1.replace(/\./,"");
+    const pattern3 = pattern2.replace(/\\/g,"");
+  
+    const hint = pattern3.replace(/_/g,".");
+  
+    function matchesHint(name, hint) {
+      if (name.length !== hint.length) return false;
+      for (let i = 0; i < name.length; i++) {
+        if (hint[i] !== '.' && name[i].toLowerCase() !== hint[i].toLowerCase()) {
+          return false;
+        }
+      }
+      return true;
+    }
+  
+    let matches = pokemon.filter(p => matchesHint(p, hint));
+  
+    return matches[0];
+  }
+  
+  module.exports = solveHint;
+  
+  
+  
