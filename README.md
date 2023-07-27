@@ -15,7 +15,7 @@ npm i pokehint
 const { solveHint } = require('pokehint');
 
 // Solving hints
-var hint = "This is your hint";
+var hint = message.content;
 console.log(solveHint(hint)) // Logs the Pokémon that has been found.
 ```
 
