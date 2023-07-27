@@ -3,7 +3,7 @@ async function solveHint(message) {
     const pokemon = require('../data/pokemon.json');
   
     if (message.content) str = message.content;
-    if (message) str = message;
+    if (message && !message.content) str = message;
     if (!message) throw new Error('[PokeHint] The message object provided is undefined.')
     const words = str.split(" ");
     let lastWord = words[words.length - 1];
