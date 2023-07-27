@@ -2,7 +2,9 @@
 async function solveHint(message) {
     const pokemon = require('../data/pokemon.json');
   
-    const str = message.content;
+    if (message.content) str = message.content;
+    if (message) str = message;
+    if (!message) throw new Error('[PokeHint] The message object provided is undefined.')
     const words = str.split(" ");
     let lastWord = words[words.length - 1];
     if (words[3].includes('_') && words[4]) {
