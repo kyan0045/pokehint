@@ -3,7 +3,7 @@
 
 ## Installation
 
-Use the package manager [npm](https://www.npmjs.com/package/pokehint) to install module.
+Use the package manager [npm](https://www.npmjs.com/package/pokehint) to install the module.
 
 ```bash
 npm i pokehint
