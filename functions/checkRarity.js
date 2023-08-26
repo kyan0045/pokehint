@@ -7,7 +7,7 @@ async function checkRarity(pokemonName) {
   const event = require("../data/event.json");
 
   if (!pokemon.includes(pokemonName)) {
-    throw new Error(`Unable to identify the rarity of that pokemon (${pokemonName}).`);
+    throw new Error(`[PokeHint] Unable to identify the rarity of that pokemon (${pokemonName}).`);
   }
   
   if (legendaries.includes(pokemonName)) return "Legendary";
