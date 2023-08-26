@@ -20,7 +20,7 @@ console.log(solveHint(hint)) // Logs the Pokémon that has been found.
 
 // Checking the rarity
 var pokemonName = 'Moltres';
-console.log(checkRarity(pokemonName)) // Logs Moltres' rarity: 'legendary'.
+console.log(checkRarity(pokemonName)) // Logs Moltres' rarity: 'Legendary'.
 ```
 
 ## Links
