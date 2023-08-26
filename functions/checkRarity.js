@@ -7,15 +7,16 @@ async function checkRarity(pokemonName) {
   const event = require("../data/event.json");
 
   if (!pokemon.includes(pokemonName)) {
-    throw new Error("Unable to identify that pokemon.");
+    throw new Error(`Unable to identify the rarity of that pokemon (${pokemonName}).`);
   }
-  if (legendaries.includes(pokemonName)) return "legendary";
-  if (mythicals.includes(pokemonName)) return "mythical";
-  if (ultra_beasts.includes(pokemonName)) return "ultra_beast";
-  if (regional.includes(pokemonName)) return "regional";
-  if (event.includes(pokemonName)) return "event";
+  
+  if (legendaries.includes(pokemonName)) return "Legendary";
+  if (mythicals.includes(pokemonName)) return "Mythical";
+  if (ultra_beasts.includes(pokemonName)) return "Ultra Beast";
+  if (regional.includes(pokemonName)) return "Regional";
+  if (event.includes(pokemonName)) return "Event";
 
-  if (pokemon.includes(pokemonName)) return "regular";
+  if (pokemon.includes(pokemonName)) return "Regular";
 }
 
 module.exports = checkRarity;
