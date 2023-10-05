@@ -7,7 +7,7 @@ async function solveHint(message) {
     const words = str.split(" ");
     let wordCount = 0;
     for (let i = words.length - 1; i >= 0; i--) {
-        if (words[i].includes('_')) {
+        if (words[i].includes('_') || words[i] == words[words.length - 1]) {
             wordCount++;
         } else {
             break;
