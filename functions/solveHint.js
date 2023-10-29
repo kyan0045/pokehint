@@ -34,7 +34,7 @@ async function solveHint(message) {
   
     let matches = pokemon.filter(p => matchesHint(p, hint));
 
-    return matches[0];
+    return matches;
   }
   
 module.exports = solveHint;
