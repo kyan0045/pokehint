@@ -6,14 +6,21 @@ async function solveHint(message) {
     if (!message) throw new Error('[PokeHint] The message object provided is undefined.')
     const words = str.split(" ");
     let wordCount = 0;
-    for (let i = words.length - 1; i >= 0; i--) {
-        if (words[i].includes('_') || words[i] == words[words.length - 1]) {
-            wordCount++;
-        } else {
-            break;
-        }
+    if (words[0] === "The" && words[1] === "pokémon" && words[2] === "is") {
+      for (let i = 3; i < words.length; i++) {
+        wordCount++;
+      }
     }
-  
+    else {
+      for (let i = words.length - 1; i >= 0; i--) {
+        if (words[i].includes('_') || words[i] == words[words.length - 1]) {
+          wordCount++;
+        } else {
+          break;
+        }
+      }
+    }
+      
     let PokemonWords = words.slice(-wordCount).join(' ');
     
     const pattern1 = PokemonWords.replace(/\!/,"");
@@ -36,5 +43,5 @@ async function solveHint(message) {
 
     return matches;
   }
-  
+
 module.exports = solveHint;
