@@ -43,5 +43,9 @@ async function solveHint(message) {
 
     return matches;
   }
+<<<<<<< HEAD
 
+=======
+  
+>>>>>>> origin/main
 module.exports = solveHint;
