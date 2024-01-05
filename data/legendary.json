@@ -1,7 +1,10 @@
 [
     "Articuno",
+    "Galarian Articuno",
     "Zapdos",
+    "Galarian Zapdos",
     "Moltres",
+    "Galarian Moltres",
     "Raikou",
     "Entei",
     "Suicune",
@@ -30,6 +33,7 @@
     "Tapu Fini",
     "Kubfu",
     "Urshifu",
+    "Rapid Strike Urshifu",
     "Regieleki",
     "Regidrago",
     "Glastrier",
@@ -49,6 +53,8 @@
     "Xerneas",
     "Yveltal",
     "Zygarde",
+    "10% Zygarde",
+    "Complete Zygarde",
     "Cosmog",
     "Cosmoem",
     "Solgaleo",
@@ -64,7 +70,6 @@
     "Ting-Lu",
     "Chi-Yu",
     "Koraidon",
-    "Miraidon",
-    "10% Zygarde"
+    "Miraidon"
 ]
   
