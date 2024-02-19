@@ -1,5 +1,5 @@
 async function solveHint(message) {
-  const pokemon = require("../data/pokemon.json");
+  const pokemon = require("../data/main/pokemon.json");
 
   if (message.content) str = message.content;
   if (message && !message.content) str = message;
