@@ -1,10 +1,10 @@
 async function checkRarity(pokemonName) {
-  const pokemon = require("../data/pokemon.json");
-  const legendaries = require("../data/legendary.json");
-  const mythicals = require("../data/mythical.json");
-  const ultra_beasts = require("../data/ultra-beast.json");
-  const regionals = require("../data/regional.json");
-  const events = require("../data/event.json");
+  const pokemon = require("../data/main/pokemon.json");
+  const legendaries = require("../data/main/legendary.json");
+  const mythicals = require("../data/main/mythical.json");
+  const ultra_beasts = require("../data/main/ultra-beast.json");
+  const regionals = require("../data/main/regional.json");
+  const events = require("../data/main/event.json");
 
   if (!pokemon.includes(pokemonName)) throw new Error(`[PokeHint] Unable to identify the rarity of that pokemon (${pokemonName}).`);
   
