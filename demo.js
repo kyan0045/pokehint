@@ -11,9 +11,9 @@ async function test() {
       inputLanguage: "English",
     })
   );
-  console.log(
-    await getImage("rayquaza", true)
-  )
+  console.log(await getImage("rayquaza", true));
+  console.log(await solveHint("The pokémon is Ch_r__n__r."));
+  console.log(await checkRarity("rayquaza"));
 }
 
 test();
