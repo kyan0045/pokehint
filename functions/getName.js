@@ -1,5 +1,7 @@
 const fs = require("fs").promises;
+const path = require('path'); 
 
+// Load all the stored names
 async function loadNameMappings() {
   try {
     const languages = ["english", "japanese", "german", "french"];
@@ -8,19 +10,19 @@ async function loadNameMappings() {
     for (const language of languages) {
       const [data1, data2] = await Promise.all([
         fs.readFile(
-          `./data/languages/english-to-language/${language}.json`,
+          path.join(__dirname, '../data/languages/english-to-language/', `${language}.json`),
           "utf8"
         ),
         fs.readFile(
-          `./data/languages/language-to-english/${language}.json`,
+          path.join(__dirname, '../data/languages/language-to-english/', `${language}.json`),
           "utf8"
         ),
       ]);
 
-      nameMappings[language] = {
-        ...JSON.parse(data1),
-        ...JSON.parse(data2),
-      };
+        nameMappings[language] = {
+            ...JSON.parse(data1),
+            ...JSON.parse(data2),
+        };
     }
 
     return nameMappings;
@@ -29,7 +31,10 @@ async function loadNameMappings() {
   }
 }
 
+// Initiate the actual function
 async function getName({ name, language, inputLanguage }) {
+   
+  // Decide what languages to use
   let languageToUse = language ?? "random";
   if (languageToUse === "random") {
     const languages = ["English", "Japanese", "German", "French"];
@@ -41,6 +46,7 @@ async function getName({ name, language, inputLanguage }) {
     throw new Error("[PokeHint] Could not find a pokemon name to convert.");
   const nameMappings = await loadNameMappings();
 
+  // Try to convert the name from the input to the specified language
   try {
     convertedName =
       nameMappings[languageToUse.toLowerCase()][name.toLowerCase()];
@@ -128,4 +134,5 @@ async function getName({ name, language, inputLanguage }) {
   }
 }
 
+// Export the function
 module.exports = getName;
