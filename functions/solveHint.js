@@ -1,6 +1,8 @@
 async function solveHint(message) {
+  // Importing all possible pokemon
   const pokemon = require("../data/main/pokemon.json");
 
+  // Determining which part of the message is the actual hint
   if (message.content) str = message.content;
   if (message && !message.content) str = message;
   if (!message)
@@ -20,15 +22,15 @@ async function solveHint(message) {
       }
     }
   }
-
   let PokemonWords = words.slice(-wordCount).join(" ");
 
+  // Converting the hint to the matching pattern
   const pattern1 = PokemonWords.replace(/\!/, "");
   const pattern2 = pattern1.replace(/\.([^.]*)$/, "$1");
   const pattern3 = pattern2.replace(/\\/g, "");
-
   const hint = pattern3.replace(/_/g, ".");
 
+  // Defining of the matching functions
   function matchesHint(name, hint) {
     if (name.length !== hint.length) return false;
     for (let i = 0; i < name.length; i++) {
@@ -39,8 +41,8 @@ async function solveHint(message) {
     return true;
   }
 
+  // Matching the hint to (a) possible pokemon(s)
   let matches = pokemon.filter((p) => matchesHint(p, hint));
-
   return matches;
 }
 
