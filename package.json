@@ -1,7 +1,7 @@
 {
   "name": "pokehint",
-  "version": "1.3.6",
-  "description": "",
+  "version": "1.3.7",
+  "description": "Package used for automating actions related to Pokétwo",
   "main": "index.js",
   "scripts": {
     "test": "node index.js"
