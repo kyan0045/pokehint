@@ -41,12 +41,13 @@ console.log(getImage("charmander", false)); // Logs 'https://cdn.poketwo.net/ima
 ## Links
 
 - [NPM](https://www.npmjs.com/package/pokehint)
+- [Discord](https://discord.com/users/1101294362505269379)
 
 ## Contributing
 
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+Pull requests are always welcome, as long as you follow [our contributing guidelines](/CONTRIBUTING.md). For major changes, please open an issue first to discuss what you would like to change.
 
-Please make sure to update tests as appropriate.
+Please make sure to update the usage examples in this file as appropriate.
 
 ## License
 
