@@ -9,13 +9,19 @@ async function getImage(pokemon, shiny) {
 
   // Importing the images
   const images = require("../data/images/images.json");
-  let image = images[pokemonName];
-  if (!image)
-    throw new Error(
-      `[PokeHint] Unable to find an image for the Pokemon: ${pokemonName}`
-    );
+  const forms = require("../data/images/forms.json");
+  const events = require("../data/images/events.json");
 
-  // Check whether to get the shiny image or not
+  let image = images[pokemonName];
+  let formImage = forms[pokemonName];
+  let eventImage = events[pokemonName];
+
+  // Check and assign the first valid image
+  image = image || formImage || eventImage;
+
+  if (!image) {
+    throw new Error(`[PokeHint] Unable to find an image for the Pokemon: ${pokemonName}`);
+  }
   if (shinyState == true) {
     image = image.replace("images", "shiny");
   }
