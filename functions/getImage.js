@@ -1,31 +1,38 @@
-async function getImage(pokemon, shiny) {
+// Load the JSON files once when the module is loaded
+const images = require("../data/images/images.json");
+const forms = require("../data/images/forms.json");
+const events = require("../data/images/events.json");
+
+/**
+ * Retrieves the image URL for a given Pokémon.
+ * @param {string} pokemon - The name of the Pokémon.
+ * @param {boolean} [shiny=false] - Whether to get the shiny version of the Pokémon.
+ * @returns {Promise<string>} The URL of the Pokémon image.
+ * @throws {Error} If no Pokémon name is specified or if no image is found.
+ */
+function getImage(pokemon, shiny = false) {
+  if (!pokemon) {
+    throw new Error("[PokeHint] No Pokémon name specified to get the image of.");
+  }
+
   const pokemonName = pokemon.toLowerCase();
-  const shinyState = shiny ? true : false;
 
-  if (!pokemonName)
-    throw new Error(
-      `[PokeHint] No pokemon name specified to get the image of. (${pokemonName})`
-    );
+  // Access the preloaded image data
+  const imageOptions = [
+    images[pokemonName],
+    forms[pokemonName],
+    events[pokemonName]
+  ];
 
-  // Importing the images
-  const images = require("../data/images/images.json");
-  const forms = require("../data/images/forms.json");
-  const events = require("../data/images/events.json");
-
-  let image = images[pokemonName];
-  let formImage = forms[pokemonName];
-  let eventImage = events[pokemonName];
-
-  // Check and assign the first valid image
-  image = image || formImage || eventImage;
+  // Find the first valid image
+  const image = imageOptions.find(img => img !== undefined);
 
   if (!image) {
-    throw new Error(`[PokeHint] Unable to find an image for the Pokemon: ${pokemonName}`);
+    throw new Error(`[PokeHint] Unable to find an image for the Pokémon: ${pokemonName}`);
   }
-  if (shinyState == true) {
-    image = image.replace("images", "shiny");
-  }
-  return image;
+
+  // Replace 'images' with 'shiny' in the URL if shiny version is requested
+  return shiny ? image.replace("images", "shiny") : image;
 }
 
 module.exports = getImage;

@@ -1,13 +1,24 @@
 const fs = require("fs").promises;
-const path = require('path'); 
+const path = require('path');
 
-// Load all the stored names
+// Cache the name mappings to improve performance
+let cachedNameMappings = null;
+
+/**
+ * Loads and caches name mappings for different languages.
+ * @returns {Promise<Object>} A promise that resolves to the name mappings object.
+ * @throws {Error} If there's an error loading the name mappings.
+ */
 async function loadNameMappings() {
+  if (cachedNameMappings) {
+    return cachedNameMappings;
+  }
+
   try {
     const languages = ["english", "japanese", "german", "french"];
     const nameMappings = {};
 
-    for (const language of languages) {
+    await Promise.all(languages.map(async (language) => {
       const [data1, data2] = await Promise.all([
         fs.readFile(
           path.join(__dirname, '../data/languages/english-to-language/', `${language}.json`),
@@ -19,120 +30,77 @@ async function loadNameMappings() {
         ),
       ]);
 
-        nameMappings[language] = {
-            ...JSON.parse(data1),
-            ...JSON.parse(data2),
-        };
-    }
+      nameMappings[language] = {
+        ...JSON.parse(data1),
+        ...JSON.parse(data2),
+      };
+    }));
 
+    cachedNameMappings = nameMappings;
     return nameMappings;
   } catch (error) {
-    throw new Error("[PokeHint] Error loading name mappings: " + error.message);
+    throw new Error(`[PokeHint] Error loading name mappings: ${error.message}`);
   }
 }
 
-// Initiate the actual function
-async function getName({ name, language, inputLanguage }) {
-   
-  // Decide what languages to use
-  let languageToUse = language ?? "random";
-  if (languageToUse === "random") {
-    const languages = ["English", "Japanese", "German", "French"];
-    languageToUse = languages[Math.floor(Math.random() * languages.length)];
-  }
-  let inputLanguageToUse = inputLanguage ?? "English";
+/**
+ * Capitalizes the first letter of a string.
+ * @param {string} string - The input string.
+ * @returns {string} The input string with its first letter capitalized.
+ */
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
 
-  if (!name)
-    throw new Error("[PokeHint] Could not find a pokemon name to convert.");
+/**
+ * Converts a Pokémon name from one language to another.
+ * @param {Object} params - The parameters for name conversion.
+ * @param {string} params.name - The Pokémon name to convert.
+ * @param {string} [params.language] - The target language (default: "random").
+ * @param {string} [params.inputLanguage] - The input language (default: "English").
+ * @returns {Promise<string>} A promise that resolves to the converted Pokémon name.
+ * @throws {Error} If the name cannot be converted or if the input is invalid.
+ */
+async function getName({ name, language, inputLanguage }) {
+  if (!name) {
+    throw new Error("[PokeHint] Could not find a Pokémon name to convert.");
+  }
+
+  // Load name mappings
   const nameMappings = await loadNameMappings();
 
-  // Try to convert the name from the input to the specified language
-  try {
-    convertedName =
-      nameMappings[languageToUse.toLowerCase()][name.toLowerCase()];
-  } catch (error) {
-    throw new Error(
-      `[PokeHint] Unable to find a conversion to ${languageToUse} for the Pokemon name: ${name}`
-    );
+  // Determine languages to use
+  const languages = ["English", "Japanese", "German", "French"];
+  const languageToUse = language === "random" ? languages[Math.floor(Math.random() * languages.length)] : (language || "random");
+  const inputLanguageToUse = inputLanguage || "English";
+
+  // Helper function for name conversion
+  const convertName = (fromLang, toLang, pokemonName) => {
+    const lowercaseName = pokemonName.toLowerCase();
+    const fromLangLower = fromLang.toLowerCase();
+    const toLangLower = toLang.toLowerCase();
+    
+    const nameKey = nameMappings[fromLangLower][lowercaseName];
+    if (!nameKey) {
+      throw new Error(`[PokeHint] Unable to find a conversion from ${fromLang} to ${toLang} for the Pokémon name: ${pokemonName}`);
+    }
+    return nameMappings[toLangLower][nameKey.toLowerCase()];
+  };
+
+  // Handle specific language cases
+  let convertedName;
+  if (languageToUse === inputLanguageToUse) {
+    convertedName = name;
+  } else if (languageToUse === "English") {
+    convertedName = convertName(inputLanguageToUse, "English", name);
+  } else if (inputLanguageToUse === "English") {
+    convertedName = convertName("English", languageToUse, name);
+  } else {
+    const englishName = convertName(inputLanguageToUse, "English", name);
+    convertedName = convertName("English", languageToUse, englishName);
   }
 
-  switch (languageToUse) {
-    case "English":
-      switch (inputLanguageToUse) {
-        case "English":
-          return name;
-        case "Japanese":
-          englishName = nameMappings["japanese"][name.toLowerCase()];
-          return englishName;
-        case "German":
-          englishName = nameMappings["german"][name.toLowerCase()];
-          return englishName;
-        case "French":
-          englishName = nameMappings["french"][name.toLowerCase()];
-          return englishName;
-        default:
-          throw new Error(
-            "[PokeHint] Invalid inputLanguage, please choose between: English, Japanese, German, or French."
-          );
-      }
-
-    case "Japanese":
-      switch (inputLanguageToUse) {
-        case "English":
-          return convertedName;
-        case "Japanese":
-          return name;
-        case "German":
-          englishName = nameMappings["german"][name.toLowerCase()];
-          return nameMappings["japanese"][englishName.toLowerCase()];
-        case "French":
-          englishName = nameMappings["french"][name.toLowerCase()];
-          return nameMappings["japanese"][englishName.toLowerCase()];
-        default:
-          throw new Error(
-            "[PokeHint] Invalid inputLanguage, please choose between: English, Japanese, German, or French."
-          );
-      }
-    case "German":
-      switch (inputLanguageToUse) {
-        case "English":
-          return convertedName;
-        case "Japanese":
-          englishName = nameMappings["japanese"][name.toLowerCase()];
-          return nameMappings["german"][englishName.toLowerCase()];
-        case "German":
-          return name;
-        case "French":
-          englishName = nameMappings["french"][name.toLowerCase()];
-          return nameMappings["german"][englishName.toLowerCase()];
-        default:
-          throw new Error(
-            "[PokeHint] Invalid inputLanguage, please choose between: English, Japanese, German, or French."
-          );
-      }
-    case "French":
-      switch (inputLanguageToUse) {
-        case "English":
-          return convertedName;
-        case "Japanese":
-          englishName = nameMappings["japanese"][name.toLowerCase()];
-          return nameMappings["french"][englishName.toLowerCase()];
-        case "German":
-          englishName = nameMappings["german"][name.toLowerCase()];
-          return nameMappings["french"][englishName.toLowerCase()];
-        case "French":
-          return name;
-        default:
-          throw new Error(
-            "[PokeHint] Invalid inputLanguage, please choose between: English, Japanese, German, or French."
-          );
-      }
-    default:
-      throw new Error(
-        "[PokeHint] Invalid language, please choose between: English, Japanese, German, or French."
-      );
-  }
+  return capitalizeFirstLetter(convertedName);
 }
 
-// Export the function
 module.exports = getName;

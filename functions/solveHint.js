@@ -1,49 +1,54 @@
-async function solveHint(message) {
-  // Importing all possible pokemon
-  const pokemon = require("../data/main/pokemon.json");
+const pokemon = require("../data/main/pokemon.json");
 
-  // Determining which part of the message is the actual hint
-  if (message.content) str = message.content;
-  if (message && !message.content) str = message;
-  if (!message)
-    throw new Error("[PokeHint] The message object provided is undefined.");
+/**
+ * Solves a Pokémon hint by finding matching Pokémon names.
+ * @param {string|Object} message - The hint message or message object.
+ * @returns {string[]} An array of Pokémon names that match the hint.
+ * @throws {Error} If the message object is undefined.
+ */
+function solveHint(message) {
+  // Extract the content from the message object or use it directly if a string
+  const str = typeof message === 'object' ? message.content : message;
+
+  if (!str) {
+    throw new Error("[PokeHint] The provided message or message content is undefined.");
+  }
+
+  // Split the message into words and identify the hint pattern
   const words = str.split(" ");
-  let wordCount = 0;
+  let pokemonHint;
+
   if (words[0] === "The" && words[1] === "pokémon" && words[2] === "is") {
-    for (let i = 3; i < words.length; i++) {
-      wordCount++;
-    }
+    // Extract the hint if the message follows a specific pattern
+    pokemonHint = words.slice(3).join(" ");
   } else {
+    // Otherwise, find the pattern starting from the last word containing "_"
     for (let i = words.length - 1; i >= 0; i--) {
-      if (words[i].includes("_") || words[i] == words[words.length - 1]) {
-        wordCount++;
-      } else {
+      if (words[i].includes("_") || i === words.length - 1) {
+        pokemonHint = words.slice(i).join(" ");
         break;
       }
     }
   }
-  let PokemonWords = words.slice(-wordCount).join(" ");
 
-  // Converting the hint to the matching pattern
-  const pattern1 = PokemonWords.replace(/\!/, "");
-  const pattern2 = pattern1.replace(/\.([^.]*)$/, "$1");
-  const pattern3 = pattern2.replace(/\\/g, "");
-  const hint = pattern3.replace(/_/g, ".");
+  // Convert the hint to a regex-like pattern
+  const hintPattern = pokemonHint
+    .replace(/[!\\\.]/g, "")  // Remove specific characters
+    .replace(/_/g, ".");      // Replace underscore with a dot
 
-  // Defining of the matching functions
-  function matchesHint(name, hint) {
-    if (name.length !== hint.length) return false;
-    for (let i = 0; i < name.length; i++) {
-      if (hint[i] !== "." && name[i].toLowerCase() !== hint[i].toLowerCase()) {
-        return false;
-      }
-    }
-    return true;
+  /**
+   * Checks if a Pokémon name matches the hint pattern.
+   * @param {string} name - The Pokémon name to check.
+   * @param {string} pattern - The hint pattern to match against.
+   * @returns {boolean} True if the name matches the pattern, false otherwise.
+   */
+  function matchesHint(name, pattern) {
+    return name.length === pattern.length && 
+           name.split('').every((char, i) => pattern[i] === "." || char.toLowerCase() === pattern[i].toLowerCase());
   }
 
-  // Matching the hint to (a) possible pokemon(s)
-  let matches = pokemon.filter((p) => matchesHint(p, hint));
-  return matches;
+  // Filter and return matching Pokémon names
+  return pokemon.filter((p) => matchesHint(p, hintPattern));
 }
 
 module.exports = solveHint;
