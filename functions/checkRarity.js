@@ -5,6 +5,7 @@ const mythicals = require("../data/main/mythical.json");
 const ultraBeasts = require("../data/main/ultra-beast.json");
 const regionals = require("../data/main/regional.json");
 const events = require("../data/main/event.json");
+const gigantamaxes = require("../data/main/gigantamax.json");
 
 // Convert arrays to Sets for faster lookups and reduced memory usage
 const pokemonSet = new Set(pokemon.map(p => p.toLowerCase()));
@@ -13,6 +14,8 @@ const mythicalsSet = new Set(mythicals.map(p => p.toLowerCase()));
 const ultraBeastsSet = new Set(ultraBeasts.map(p => p.toLowerCase()));
 const regionalsSet = new Set(regionals.map(p => p.toLowerCase()));
 const eventsSet = new Set(events.map(p => p.toLowerCase()));
+const gigantamaxSet = new Set(gigantamaxes.map(p => p.toLowerCase()));
+
 
 /**
  * Checks the rarity of a given Pokémon.
@@ -37,6 +40,7 @@ function checkRarity(pokemonName) {
     { set: ultraBeastsSet, rarity: "Ultra Beast" },
     { set: regionalsSet, rarity: "Regional" },
     { set: eventsSet, rarity: "Event" },
+    { set: gigantamaxSet, rarity: "Gigantamax" }
   ];
 
   // Check each rarity set
