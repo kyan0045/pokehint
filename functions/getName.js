@@ -70,14 +70,17 @@ async function getName({ name, language, inputLanguage }) {
   const nameMappings = await loadNameMappings();
 
   // Determine languages to use
-  const languages = ["English", "Japanese", "German", "French"];
+  const languages = ["english", "japanese", "german", "french"];
   const languageToUse = language === "random" ? languages[Math.floor(Math.random() * languages.length)] : (language || "random");
-  const inputLanguageToUse = inputLanguage || "English";
+  const inputLanguageToUse = inputLanguage || "english";
 
   // Helper function for name conversion
   const convertName = (fromLang, toLang, pokemonName) => {
     const lowercaseName = pokemonName.toLowerCase();
     const fromLangLower = fromLang.toLowerCase();
+    if (toLang === "random") {
+      toLang = languages[Math.floor(Math.random() * languages.length)];
+    }
     const toLangLower = toLang.toLowerCase();
     
     const nameKey = nameMappings[fromLangLower][lowercaseName];

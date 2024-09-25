@@ -23,7 +23,7 @@ const gigantamaxSet = new Set(gigantamaxes.map(p => p.toLowerCase()));
  * @returns {Promise<string>} The rarity of the Pokémon.
  * @throws {Error} If the Pokémon name is not recognized.
  */
-function checkRarity(pokemonName) {
+async function checkRarity(pokemonName) {
   const normalizedName = pokemonName.toLowerCase();
 
   // Check if the Pokémon exists in our data

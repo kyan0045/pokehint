@@ -11,9 +11,10 @@ const events = require("../data/images/events.json");
  * @throws {Error} If no Pokémon name is specified or if no image is found.
  */
 function getImage(pokemon, shiny = false) {
-  if (!pokemon) {
-    throw new Error("[PokeHint] No Pokémon name specified to get the image of.");
+  if (typeof pokemon !== 'string' || !pokemon.trim()) {
+    throw new Error("[PokeHint] Invalid or empty Pokémon name specified.");
   }
+  
 
   const pokemonName = pokemon.toLowerCase();
 
