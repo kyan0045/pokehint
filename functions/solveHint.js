@@ -33,7 +33,8 @@ function solveHint(message) {
 
   // Convert the hint to a regex-like pattern
   const hintPattern = pokemonHint
-    .replace(/[!\\\.]/g, "")  // Remove specific characters
+    .replace(/\.([^.]*)$/, "$1")  // Remove trailing dot
+    .replace(/[!\\]/g, "")  // Remove specific characters
     .replace(/_/g, ".");      // Replace underscore with a dot
 
   /**
