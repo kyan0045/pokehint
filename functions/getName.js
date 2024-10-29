@@ -85,7 +85,8 @@ async function getName({ name, language, inputLanguage }) {
     
     const nameKey = nameMappings[fromLangLower][lowercaseName];
     if (!nameKey) {
-      throw new Error(`[PokeHint] Unable to find a conversion from ${fromLang} to ${toLang} for the Pokémon name: ${pokemonName}`);
+      console.error(`[PokeHint] Unable to find a conversion from ${fromLang} to ${toLang} for the Pokémon name: ${pokemonName}`);
+      return pokemonName;
     }
     return nameMappings[toLangLower][nameKey.toLowerCase()];
   };
