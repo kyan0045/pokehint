@@ -29,7 +29,8 @@ function getImage(pokemon, shiny = false) {
   const image = imageOptions.find(img => img !== undefined);
 
   if (!image) {
-    throw new Error(`[PokeHint] Unable to find an image for the Pokémon: ${pokemonName}`);
+    console.log(`[PokeHint] Unable to find an image for the Pokémon: ${pokemon}`);
+    return null;
   }
 
   // Replace 'images' with 'shiny' in the URL if shiny version is requested
