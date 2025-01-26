@@ -4,7 +4,10 @@
   "description": "Package used for automating actions related to Pokétwo",
   "main": "index.js",
   "scripts": {
-    "test": "node index.js"
+    "test": "node index.js",
+    "release:patch": "npm version patch && npm publish",
+    "release:minor": "npm version minor && npm publish",
+    "release:major": "npm version major && npm publish"
   },
   "repository": {
     "type": "git",
