@@ -82,6 +82,9 @@ async function getName({ name, language, inputLanguage }) {
       toLang = languages[Math.floor(Math.random() * languages.length)];
     }
     const toLangLower = toLang.toLowerCase();
+    if (toLangLower === fromLangLower) {
+      return pokemonName;
+    }
     
     const nameKey = nameMappings[fromLangLower][lowercaseName];
     if (!nameKey) {
