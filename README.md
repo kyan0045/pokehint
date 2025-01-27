@@ -3,6 +3,7 @@
 NPM package to automatically solve hints & check the rarity of pokemon, made for pokemon discord bots like Pokétwo
 
 [![](https://img.shields.io/npm/v/pokehint.svg)](https://www.npmjs.com/package/pokehint)
+[![](https://img.shields.io/npm/dm/pokehint.svg)](https://www.npmjs.com/package/pokehint)
 
 ## Installation
 
