@@ -19,7 +19,7 @@ async function demo() {
       language: "French",
       inputLanguage: "English",
     })
-  ); // Logs the French name of Charmander: 'Sulfura'.
+  ); // Logs the French name of Moltres: 'Sulfura'.
 
   // Getting the Pokétwo image sprite of a specified pokemon
   console.log(getImage("Moltres", false)); // Logs 'https://cdn.poketwo.net/images/164.png'.
