@@ -15,15 +15,16 @@ async function demo() {
   // Converting a name to a different language
   console.log(
     await getName({
-      name: "Moltres",
+      name: "Solosis",
       language: "French",
       inputLanguage: "English",
     })
-  ); // Logs the French name of Moltres: 'Sulfura'.
+  ); // Logs the French name of Solosis: 'Nucléos'.
 
   // Getting the Pokétwo image sprite of a specified pokemon
-  console.log(getImage("Moltres", false)); // Logs 'https://cdn.poketwo.net/images/164.png'.
-  console.log(getImage("Moltres", true)); // Logs 'https://cdn.poketwo.net/shiny/164.png'.
+  console.log(getImage("Charizard", false, false)); // Logs the regular image: 'https://cdn.poketwo.net/images/6.png'.
+  console.log(getImage("Charizard", true, false)); // Logs the shiny image: 'https://cdn.poketwo.net/shiny/6.png'.
+  console.log(getImage("Charizard", false, true)); // Logs the Gigantamax image: 'https://cdn.poketwo.net/images/10187.png'.
 }
 
 demo();
