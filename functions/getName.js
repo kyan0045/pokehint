@@ -1,5 +1,5 @@
 const fs = require("fs").promises;
-const path = require('path');
+const path = require("path");
 
 // Cache the name mappings to improve performance
 let cachedNameMappings = null;
@@ -18,23 +18,33 @@ async function loadNameMappings() {
     const languages = ["english", "japanese", "german", "french"];
     const nameMappings = {};
 
-    await Promise.all(languages.map(async (language) => {
-      const [data1, data2] = await Promise.all([
-        fs.readFile(
-          path.join(__dirname, '../data/languages/english-to-language/', `${language}.json`),
-          "utf8"
-        ),
-        fs.readFile(
-          path.join(__dirname, '../data/languages/language-to-english/', `${language}.json`),
-          "utf8"
-        ),
-      ]);
+    await Promise.all(
+      languages.map(async (language) => {
+        const [data1, data2] = await Promise.all([
+          fs.readFile(
+            path.join(
+              __dirname,
+              "../data/languages/english-to-language/",
+              `${language}.json`
+            ),
+            "utf8"
+          ),
+          fs.readFile(
+            path.join(
+              __dirname,
+              "../data/languages/language-to-english/",
+              `${language}.json`
+            ),
+            "utf8"
+          ),
+        ]);
 
-      nameMappings[language] = {
-        ...JSON.parse(data1),
-        ...JSON.parse(data2),
-      };
-    }));
+        nameMappings[language] = {
+          ...JSON.parse(data1),
+          ...JSON.parse(data2),
+        };
+      })
+    );
 
     cachedNameMappings = nameMappings;
     return nameMappings;
@@ -50,6 +60,23 @@ async function loadNameMappings() {
  */
 function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+/**
+ * Detects the language of a Pokémon name by checking the name mappings.
+ * @param {string} name - The Pokémon name to detect the language of.
+ * @param {Object} nameMappings - The loaded name mappings.
+ * @param {Array<string>} languages - The list of languages to check.
+ * @returns {Promise<string>} The detected language, or "english" if not found.
+ */
+async function detectLanguage(name, nameMappings, languages) {
+  const lowercaseName = name.toLowerCase();
+  for (const language of languages) {
+    if (nameMappings[language] && nameMappings[language][lowercaseName]) {
+      return language;
+    }
+  }
+  return "english"; // Default to English if language is not detected
 }
 
 /**
@@ -71,8 +98,12 @@ async function getName({ name, language, inputLanguage }) {
 
   // Determine languages to use
   const languages = ["english", "japanese", "german", "french"];
-  const languageToUse = language === "random" ? languages[Math.floor(Math.random() * languages.length)] : (language || "random");
-  const inputLanguageToUse = inputLanguage || "english";
+  const languageToUse =
+    language === "random"
+      ? languages[Math.floor(Math.random() * languages.length)]
+      : language || "random";
+  const inputLanguageToUse =
+    (await detectLanguage(name, nameMappings, languages))
 
   // Helper function for name conversion
   const convertName = (fromLang, toLang, pokemonName) => {
@@ -85,10 +116,12 @@ async function getName({ name, language, inputLanguage }) {
     if (toLangLower === fromLangLower) {
       return pokemonName;
     }
-    
+
     const nameKey = nameMappings[fromLangLower][lowercaseName];
     if (!nameKey) {
-      console.error(`[PokeHint] Unable to find a conversion from ${fromLang} to ${toLang} for the Pokémon name: ${pokemonName}`);
+      console.error(
+        `[PokeHint] Unable to find a conversion from ${fromLang} to ${toLang} for the Pokémon name: ${pokemonName}`
+      );
       return pokemonName;
     }
     return nameMappings[toLangLower][nameKey.toLowerCase()];
