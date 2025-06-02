@@ -3,6 +3,7 @@ const images = require("../data/images/images.json");
 const forms = require("../data/images/forms.json");
 const events = require("../data/images/events.json");
 const gigantamaxImages = require("../data/images/gigantamax.json");
+const defaultImg = "https://archives.bulbagarden.net/media/upload/a/a1/Substitute_artwork.png";
 
 /**
  * Retrieves the image URL for a given Pokémon.
@@ -34,7 +35,7 @@ function getImage(pokemon, shiny = false, gigantamax = false) {
     console.log(
       `[PokeHint] Unable to find an image for the Pokémon: ${pokemon}`
     );
-    return null;
+    return defaultImg;
   }
 
   // Replace 'images' with 'shiny' in the URL if shiny version is requested
