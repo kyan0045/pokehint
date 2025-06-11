@@ -34,7 +34,7 @@ function getImage(pokemon, shiny = false, gigantamax = false) {
     console.log(
       `[PokeHint] Unable to find an image for the Pokémon: ${pokemon}`
     );
-    return null;
+    return "https://res.cloudinary.com/dppthk8lt/image/upload/v1749666743/question_mkani5.png";
   }
 
   // Replace 'images' with 'shiny' in the URL if shiny version is requested
