@@ -1,8 +1,22 @@
 // Load the JSON files once when the module is loaded
-const images = require("../data/images/images.json");
-const forms = require("../data/images/forms.json");
-const events = require("../data/images/events.json");
-const gigantamaxImages = require("../data/images/gigantamax.json");
+const imagesRaw = require("../data/images/images.json");
+const formsRaw = require("../data/images/forms.json");
+const eventsRaw = require("../data/images/events.json");
+const gigantamaxImagesRaw = require("../data/images/gigantamax.json");
+
+// Convert object keys to lowercase for case-insensitive lookups
+const images = Object.fromEntries(
+  Object.entries(imagesRaw).map(([key, value]) => [key.toLowerCase(), value])
+);
+const forms = Object.fromEntries(
+  Object.entries(formsRaw).map(([key, value]) => [key.toLowerCase(), value])
+);
+const events = Object.fromEntries(
+  Object.entries(eventsRaw).map(([key, value]) => [key.toLowerCase(), value])
+);
+const gigantamaxImages = Object.fromEntries(
+  Object.entries(gigantamaxImagesRaw).map(([key, value]) => [key.toLowerCase(), value])
+);
 
 /**
  * Retrieves the image URL for a given Pokémon.
