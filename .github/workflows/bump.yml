@@ -8,30 +8,23 @@ on:
 jobs:
   bump-version:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      # Check out the repository's code
       - uses: actions/checkout@v4
         with:
-          # Fetches all history for all branches and tags
-          # This is necessary for git to properly create a new tag
           fetch-depth: 0
 
-      # Set up Node.js
       - uses: actions/setup-node@v4
         with:
           node-version: '20.x'
 
-      # Install dependencies from package-lock.json
       - run: npm ci
-
-      # Configure Git with the bot's credentials
       - name: Configure Git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      # Bump the patch version, create a commit, and a new tag
-      # Then, push the commit and the new tag back to the repository
       - name: Bump version and push to repo
         run: |
           npm version patch -m "chore: release %s"
