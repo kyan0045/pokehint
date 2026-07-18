@@ -9,5 +9,5 @@
     "target": "ES2022",
     "types": []
   },
-  "include": ["index.d.ts", "test/types.ts"]
+  "include": ["index.d.ts", "type-tests/index.ts"]
 }
