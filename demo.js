@@ -1,16 +1,16 @@
 const getName = require("./functions/getName.js");
 const solveHint = require("./functions/solveHint.js");
 const getImage = require("./functions/getImage.js");
-const checkRarity = require("./functions/checkRarity.js");
+const checkRaritySync = require("./functions/checkRaritySync.js");
 
 async function demo() {
   // Solving hints
   var hint = "The pokémon is M_l__es.";
-  console.log(solveHint(hint)); // Logs 'Moltres'.
+  console.log(solveHint(hint)); // Logs ["Moltres"].
 
   // Checking the rarity
   var pokemonName = "Moltres";
-  console.log(checkRarity(pokemonName)); // Logs Moltres' rarity: 'Legendary'.
+  console.log(checkRaritySync(pokemonName)); // Logs Moltres' rarity: 'Legendary'.
 
   // Converting a name to a different language
   console.log(

@@ -4,6 +4,7 @@ NPM package to automatically solve hints & check the rarity of pokemon, made for
 
 [![](https://img.shields.io/npm/v/pokehint.svg)](https://www.npmjs.com/package/pokehint)
 [![](https://img.shields.io/npm/dm/pokehint.svg)](https://www.npmjs.com/package/pokehint)
+[![CI](https://github.com/kyan0045/pokehint/actions/workflows/ci.yml/badge.svg)](https://github.com/kyan0045/pokehint/actions/workflows/ci.yml)
 
 ## Installation
 
@@ -16,29 +17,42 @@ npm i pokehint
 ## Usage
 
 ```javascript
-const { solveHint, checkRarity, getName, getImage } = require("pokehint");
+const { solveHint, checkRaritySync, getName, getImage } = require("pokehint");
 
-// Solving hints
-var hint = "The pokémon is M_l__es.";
-console.log(solveHint(hint)); // Logs 'Moltres'.
+async function main() {
+  // Solving hints returns every matching name.
+  console.log(solveHint("The pokémon is M_l__es.")); // ["Moltres"]
 
-// Checking the rarity
-var pokemonName = "Moltres";
-console.log(checkRarity(pokemonName)); // Logs Moltres' rarity: 'Legendary'.
+  // Checking rarity.
+  console.log(checkRaritySync("Moltres")); // "Legendary"
 
-// Converting a name to a different language
-console.log(
-  await getName({
-    name: "Solosis",
-    language: "French",
-    inputLanguage: "English",
-  })
-); // Logs the French name of Solosis: 'Nucléos'.
+  // Converting a name to a different language.
+  console.log(
+    await getName({
+      name: "Solosis",
+      language: "French",
+      inputLanguage: "English",
+    })
+  ); // "Nucléos"
 
-// Getting the Pokétwo image sprite of a specified pokemon
-console.log(getImage("Charizard", false, false)); // Logs the regular image: 'https://cdn.poketwo.net/images/6.png'.
-console.log(getImage("Charizard", true, false)); // Logs the shiny image: 'https://cdn.poketwo.net/shiny/6.png'.
-console.log(getImage("Charizard", false, true)); // Logs the Gigantamax image: 'https://cdn.poketwo.net/images/10187.png'.
+  // Getting regular, shiny, and Gigantamax Pokétwo sprites.
+  console.log(getImage("Charizard")); // https://cdn.poketwo.net/images/6.png
+  console.log(getImage("Charizard", true)); // https://cdn.poketwo.net/shiny/6.png
+  console.log(getImage("Charizard", false, true)); // https://cdn.poketwo.net/images/10187.png
+}
+
+main().catch(console.error);
+```
+
+### Rarity Migration
+
+`checkRarity()` is deprecated but remains available for compatibility with Promise-based code. Use the synchronous `checkRaritySync()` for new code:
+
+```javascript
+const { checkRarity, checkRaritySync } = require("pokehint");
+
+checkRaritySync("Moltres"); // "Legendary"
+await checkRarity("Moltres"); // "Legendary" (deprecated)
 ```
 
 ## Links
