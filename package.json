@@ -3,11 +3,18 @@
   "version": "1.4.26",
   "description": "Package used for automating actions related to Pokétwo",
   "main": "index.js",
+  "types": "index.d.ts",
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "functions/",
+    "data/"
+  ],
   "scripts": {
-    "test": "node index.js",
-    "release:patch": "npm version patch && npm publish",
-    "release:minor": "npm version minor && npm publish",
-    "release:major": "npm version major && npm publish"
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "node --test",
+    "typecheck": "tsc --noEmit"
   },
   "repository": {
     "type": "git",
@@ -19,10 +26,14 @@
     "poke2"
   ],
   "author": "kyan0045",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/kyan0045/pokehint/issues"
   },
   "homepage": "https://github.com/kyan0045/pokehint#readme",
-  "dependencies": {}
+  "dependencies": {},
+  "devDependencies": {
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.2"
+  }
 }
