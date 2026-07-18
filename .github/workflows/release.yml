@@ -1,0 +1,57 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Verify release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run format:check
+      - run: npm run typecheck
+      - name: Verify release tag
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: node -e "const expected = 'v' + require('./package.json').version; if (process.env.RELEASE_TAG !== expected) { console.error('Expected tag ' + expected + ', received ' + process.env.RELEASE_TAG); process.exit(1); }"
+      - run: npm pack --dry-run
+      - name: Install and test packed package
+        shell: bash
+        run: |
+          tarball="$(npm pack --silent --pack-destination "$RUNNER_TEMP")"
+          npm install --prefix "$RUNNER_TEMP/pokehint-smoke" "$RUNNER_TEMP/$tarball"
+          node -e "const p = require(process.env.RUNNER_TEMP + '/pokehint-smoke/node_modules/pokehint'); if (p.checkRaritySync('Moltres') !== 'Legendary' || !(p.checkRarity('Moltres') instanceof Promise)) process.exit(1)"
+
+  publish:
+    name: Publish to npm
+    needs: verify
+    runs-on: ubuntu-latest
+    environment: npm
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+          registry-url: https://registry.npmjs.org/
+      - run: npm ci
+      - name: Install trusted-publishing npm version
+        run: npm install --global npm@11
+      - run: npm publish --provenance --access public

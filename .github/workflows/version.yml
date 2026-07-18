@@ -1,0 +1,60 @@
+name: Prepare Version
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: Version increment
+        required: true
+        default: patch
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+permissions:
+  actions: write
+  contents: write
+  pull-requests: write
+
+jobs:
+  version:
+    name: Create version pull request
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run format:check
+      - run: npm run typecheck
+      - name: Update package version
+        run: npm version "${{ inputs.release_type }}" --no-git-tag-version
+      - name: Read version
+        id: version
+        shell: bash
+        run: |
+          version="$(node --print "require('./package.json').version")"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+      - name: Create release pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+        shell: bash
+        run: |
+          branch="release/v$VERSION"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$branch"
+          git add package.json package-lock.json
+          git commit -m "chore: release v$VERSION"
+          git push --set-upstream origin "$branch"
+          gh pr create --base main --head "$branch" --title "chore: release v$VERSION" --body "Prepares release v$VERSION. Publishing occurs only after this PR is merged and the matching GitHub release is published."
+          gh workflow run ci.yml --ref "$branch"
