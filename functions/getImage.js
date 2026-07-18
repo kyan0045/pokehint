@@ -23,15 +23,15 @@ const gigantamaxImages = Object.fromEntries(
  * @param {string} pokemon - The name of the Pokémon.
  * @param {boolean} [shiny=false] - Whether to get the shiny version of the Pokémon.
  * @param {boolean} [gigantamax=false] - Whether to get the Gigantamax version of the Pokémon.
- * @returns {Promise<string>} The URL of the Pokémon image.
- * @throws {Error} If no Pokémon name is specified or if no image is found.
+ * @returns {string} The URL of the Pokémon image, or a fallback image URL.
+ * @throws {Error} If no valid Pokémon name is specified.
  */
 function getImage(pokemon, shiny = false, gigantamax = false) {
   if (typeof pokemon !== "string" || !pokemon.trim()) {
     throw new Error("[PokeHint] Invalid or empty Pokémon name specified.");
   }
 
-  const pokemonName = pokemon.toLowerCase();
+  const pokemonName = pokemon.trim().toLowerCase();
 
   // Access the preloaded image data
   const imageOptions = [
@@ -45,9 +45,6 @@ function getImage(pokemon, shiny = false, gigantamax = false) {
   const image = imageOptions.find((img) => img !== undefined);
 
   if (!image) {
-    console.log(
-      `[PokeHint] Unable to find an image for the Pokémon: ${pokemon}`
-    );
     return "https://res.cloudinary.com/dppthk8lt/image/upload/v1749666743/question_mkani5.png";
   }
 

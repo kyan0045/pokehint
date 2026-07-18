@@ -1,8 +1,13 @@
 const fs = require("fs").promises;
 const path = require("path");
+const pokemon = require("../data/main/pokemon.json");
 
 // Cache the name mappings to improve performance
 let cachedNameMappings = null;
+const languages = ["english", "japanese", "german", "french"];
+const canonicalEnglishNames = new Map(
+  pokemon.map((pokemonName) => [pokemonName.toLowerCase(), pokemonName])
+);
 
 /**
  * Loads and caches name mappings for different languages.
@@ -14,27 +19,18 @@ async function loadNameMappings() {
     return cachedNameMappings;
   }
 
-  try {
-    const languages = ["english", "japanese", "german", "french"];
+  cachedNameMappings = (async () => {
     const nameMappings = {};
 
     await Promise.all(
       languages.map(async (language) => {
         const [data1, data2] = await Promise.all([
           fs.readFile(
-            path.join(
-              __dirname,
-              "../data/languages/english-to-language/",
-              `${language}.json`
-            ),
+            path.join(__dirname, "../data/languages/english-to-language/", `${language}.json`),
             "utf8"
           ),
           fs.readFile(
-            path.join(
-              __dirname,
-              "../data/languages/language-to-english/",
-              `${language}.json`
-            ),
+            path.join(__dirname, "../data/languages/language-to-english/", `${language}.json`),
             "utf8"
           ),
         ]);
@@ -46,9 +42,13 @@ async function loadNameMappings() {
       })
     );
 
-    cachedNameMappings = nameMappings;
     return nameMappings;
+  })();
+
+  try {
+    return await cachedNameMappings;
   } catch (error) {
+    cachedNameMappings = null;
     throw new Error(`[PokeHint] Error loading name mappings: ${error.message}`);
   }
 }
@@ -66,10 +66,9 @@ function capitalizeFirstLetter(string) {
  * Detects the language of a Pokémon name by checking the name mappings.
  * @param {string} name - The Pokémon name to detect the language of.
  * @param {Object} nameMappings - The loaded name mappings.
- * @param {Array<string>} languages - The list of languages to check.
- * @returns {Promise<string>} The detected language, or "english" if not found.
+ * @returns {string} The detected language, or "english" if not found.
  */
-async function detectLanguage(name, nameMappings, languages) {
+function detectLanguage(name, nameMappings) {
   const lowercaseName = name.toLowerCase();
   for (const language of languages) {
     if (nameMappings[language] && nameMappings[language][lowercaseName]) {
@@ -88,56 +87,74 @@ async function detectLanguage(name, nameMappings, languages) {
  * @returns {Promise<string>} A promise that resolves to the converted Pokémon name.
  * @throws {Error} If the name cannot be converted or if the input is invalid.
  */
-async function getName({ name, language, inputLanguage }) {
-  if (!name) {
+async function getName({ name, language, inputLanguage } = {}) {
+  if (typeof name !== "string" || !name.trim()) {
     throw new Error("[PokeHint] Could not find a Pokémon name to convert.");
   }
+
+  const pokemonName = name.trim();
+
+  const normalizeLanguage = (value, parameterName) => {
+    if (typeof value !== "string") {
+      throw new Error(`[PokeHint] ${parameterName} must be a supported language.`);
+    }
+
+    const normalizedLanguage = value.toLowerCase();
+    if (!languages.includes(normalizedLanguage)) {
+      throw new Error(
+        `[PokeHint] Unsupported ${parameterName}: ${value}. Supported languages are English, Japanese, German, and French.`
+      );
+    }
+
+    return normalizedLanguage;
+  };
 
   // Load name mappings
   const nameMappings = await loadNameMappings();
 
   // Determine languages to use
-  const languages = ["english", "japanese", "german", "french"];
+  const normalizedTargetLanguage = typeof language === "string" ? language.toLowerCase() : language;
   const languageToUse =
-    language === "random"
+    normalizedTargetLanguage === "random" || language === undefined
       ? languages[Math.floor(Math.random() * languages.length)]
-      : language || "random";
+      : normalizeLanguage(language, "language");
   const inputLanguageToUse =
-    (await detectLanguage(name, nameMappings, languages))
+    inputLanguage === undefined
+      ? detectLanguage(pokemonName, nameMappings)
+      : normalizeLanguage(inputLanguage, "inputLanguage");
 
   // Helper function for name conversion
   const convertName = (fromLang, toLang, pokemonName) => {
     const lowercaseName = pokemonName.toLowerCase();
-    const fromLangLower = fromLang.toLowerCase();
-    if (toLang === "random") {
-      toLang = languages[Math.floor(Math.random() * languages.length)];
-    }
-    const toLangLower = toLang.toLowerCase();
-    if (toLangLower === fromLangLower) {
+    if (toLang === fromLang) {
       return pokemonName;
     }
 
-    const nameKey = nameMappings[fromLangLower][lowercaseName];
+    const nameKey = nameMappings[fromLang][lowercaseName];
     if (!nameKey) {
-      console.error(
-        `[PokeHint] Unable to find a conversion from ${fromLang} to ${toLang} for the Pokémon name: ${pokemonName}`
-      );
       return pokemonName;
     }
-    return nameMappings[toLangLower][nameKey.toLowerCase()];
+
+    return nameMappings[toLang][nameKey.toLowerCase()] || pokemonName;
   };
 
   // Handle specific language cases
   let convertedName;
   if (languageToUse === inputLanguageToUse) {
-    convertedName = name;
-  } else if (languageToUse === "English") {
-    convertedName = convertName(inputLanguageToUse, "English", name);
-  } else if (inputLanguageToUse === "English") {
-    convertedName = convertName("English", languageToUse, name);
+    convertedName = pokemonName;
+  } else if (languageToUse === "english") {
+    convertedName = convertName(inputLanguageToUse, "english", pokemonName);
+  } else if (inputLanguageToUse === "english") {
+    convertedName = convertName("english", languageToUse, pokemonName);
   } else {
-    const englishName = convertName(inputLanguageToUse, "English", name);
-    convertedName = convertName("English", languageToUse, englishName);
+    const englishName = convertName(inputLanguageToUse, "english", pokemonName);
+    convertedName = convertName("english", languageToUse, englishName);
+  }
+
+  if (languageToUse === "english") {
+    return (
+      canonicalEnglishNames.get(convertedName.toLowerCase()) || capitalizeFirstLetter(convertedName)
+    );
   }
 
   return capitalizeFirstLetter(convertedName);
